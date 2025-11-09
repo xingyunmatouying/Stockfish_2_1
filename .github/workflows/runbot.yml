@@ -30,9 +30,12 @@ jobs:
       - name: Replace token
         shell: powershell
         run: |
-          $configPath = "config.yml"
+          $yamlFilePath = "config.yml"
+          $searchString = "BOT_TOKEN"
           $secretValue = "${{ secrets.BOT_TOKEN }}"
-          (Get-Content $configPath) -replace 'BOT_TOKEN', $secretValue | Out-File -encoding UTF8 $configPath
+          $fileContent = Get-Content $yamlFilePath
+          $newContent = $fileContent -replace $searchString, $secretValue
+          Set-Content $yamlFilePath -Value $newContent
 
         
       - name: Run bot
