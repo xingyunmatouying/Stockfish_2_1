@@ -11,7 +11,7 @@ on:
 
 jobs:
   run-bot:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
@@ -25,26 +25,16 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
- 
-
-      - name: Install Stockfish
-        run: |
-          curl -sSL https://raw.githubusercontent.com/ppigazzini/stockfish-downloader/main/posix_helper.sh | sh -s
-          tar -xf stockfish-*.tar
-          rm stockfish-*.tar
-          mv -f stockfish/stockfish-* engines/stockfish
-          rm -r stockfish
-
-      - name: Give perms to execute engines
-        run: |
-          chmod +x ./engines/stockfish
-          chmod +x ./engines/fairy-stockfish
 
 
       - name: Replace token
+        shell: powershell
         run: |
-          sed -i 's|BOT_TOKEN|${{ secrets.BOT_TOKEN }}|g' config.yml
+          $configPath = "config.yml"
+          $secretValue = "${{ secrets.BOT_TOKEN }}"
+          (Get-Content $configPath) -replace 'BOT_TOKEN', $secretValue | Out-File -encoding UTF8 $configPath
 
+        
       - name: Run bot
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }} 
